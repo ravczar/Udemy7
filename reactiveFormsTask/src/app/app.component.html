@@ -1,12 +1,12 @@
 <!--
   # Create form with the following Controls and Validators
-  1) Project Name (not empty)
-  2) Mail (not empty, mail must be valid - custom validator)
-  3) Project Status Dropdown - 3 values [Stable, Critical, Finished]
+ok  1) Project Name (not empty)
+ok  2) Mail (not empty, mail must be valid - custom validator)
+ok  3) Project Status Dropdown - 3 values [Stable, Critical, Finished]
   
-  * Add your own validator which does not allow TEST/test as a Project Name
-  ** Also implement that validator as an async Validator (old one must be replaced - commented out)
-  *** Upon submiting the form, simply print the value of the form to the console.
+ok  * Add your own validator which does not allow TEST/test as a Project Name
+ok  ** Also implement that validator as an async Validator (old one must be replaced - commented out)
+ok  *** Upon submiting the form, simply print the value of the form to the console.
 -->
 <div class="container bg bg-warning">
   <div class="row">
@@ -24,7 +24,9 @@
           <span 
             class="help-block"
             *ngIf="!assignmentForm.get('projectname').valid && assignmentForm.get('projectname').touched">
-            Project Name is required, please provide.
+            <span class="help-block" *ngIf="this.assignmentForm.get('projectname').errors?.projectNameIsForbiddenAsync"> 
+              This project name: '{{assignmentForm.get('projectname').value}}' is forbidden!
+            </span>
           </span>
         </div>
 
@@ -38,7 +40,12 @@
           <span 
             class="help-block"
             *ngIf="!assignmentForm.get('email').valid && assignmentForm.get('email').touched">
-            Email is required, please provide.
+            <span class="help-block" *ngIf="this.assignmentForm.get('email').errors?.emailIsIncompleteAsync"> 
+              This email name: '{{assignmentForm.get('email').value}}' is not complete Async!
+            </span>
+            <span class="help-block" *ngIf="this.assignmentForm.get('email').errors?.required"> 
+              Email is required, please provide.
+            </span>
           </span>
         </div>
 
@@ -53,9 +60,19 @@
               [ngValue]="status">Status {{i}}: {{status}}</option>
           </select>
         </div>
-
-        <button class="btn btn-success" type="submit">Submit</button>
+        <button class="btn btn-danger" type="button" (click)="resetForm()">Reset</button>
+        <button class="btn btn-success" type="submit" [disabled]="!assignmentForm.valid && !assignmentForm.touched">Submit</button>
       </form>
     </div>
   </div>
+  <hr>
+  <div class="row" *ngIf="formSubmited && assignmentForm.valid">
+    <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
+      <h4>You have entered:</h4>
+      <p>Project name: {{itemSubmited.projectname}}</p>
+      <p>Email: {{itemSubmited.email}}</p>
+      <p>Project status: {{itemSubmited.status}}</p>
+    </div>
+  </div>
+
 </div>

@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormArray} from '@angular/forms';
+import { promise } from 'protractor';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -11,8 +13,11 @@ export class AppComponent implements OnInit {
   assignmentForm: FormGroup;
   defaultStatus: string;
   forbiddenProjectNames: Array<string>;
+  itemSubmited: {projectname:string, email:string, status:string};
+  formSubmited: boolean;
 
   constructor(){
+    this.formSubmited = false;
     // Init array of status
     this.projectStatus = new Array<string>(
       "Stable", "Critical", "Finished"
@@ -25,14 +30,21 @@ export class AppComponent implements OnInit {
   ngOnInit(): void{
     // Build form in TS
     this.assignmentForm = new FormGroup({
-      'projectname': new FormControl('', [Validators.required, this.validateForbiddenProjectNames.bind(this)]),
-      'email': new FormControl('', Validators.required),
+      'projectname': new FormControl('Your username here', [Validators.required], [this.validateForbiddenProjectNamesAsync.bind(this)]),
+      'email': new FormControl('', [Validators.required], [this.incompleteEmailAsync]),
       'projectstatus': new FormControl(this.defaultStatus, Validators.required),
     });
   }
 
   onSubmitForm(){
-    console.log(this.assignmentForm);
+    console.log(this.assignmentForm.value);
+    this.formSubmited = !this.formSubmited;
+    this.itemSubmited = {
+      projectname: this.assignmentForm.get('projectname').value,
+      email: this.assignmentForm.get('email').value,
+      status: this.assignmentForm.get('projectstatus').value,
+    };
+    
   }
 
   // Sync
@@ -44,8 +56,44 @@ export class AppComponent implements OnInit {
   // Async
   validateForbiddenProjectNamesAsync(control: FormControl) : Promise<any> | Observable<any>{
     const promise = new Promise<any>((resolve, reject) => {
-      setTimeout(()=>{},1500);
+      setTimeout(()=>{
+        if( this.forbiddenProjectNames.indexOf(control.value.toLowerCase()) !== -1){
+          resolve({'projectNameIsForbiddenAsync':true});
+        } else {
+          resolve(null);
+        }
+      },2500);
     });
+    return promise;
   }
 
+  // Sync
+  incompleteEmail(control: FormControl): {[s: string]: boolean} {
+    if (control.value.indexOf('@') === -1 || control.value.indexOf('.') === -1 || control.value.size() <= 8){
+      return {'emailIsIncomplete': true};
+    }
+    return null;
+  }
+  // Async
+  incompleteEmailAsync(control: FormControl) : Promise<any> | Observable<any>{
+    const promise = new Promise<any>((resolve, reject) => {
+      setTimeout(()=>{
+        if (control.value.indexOf('@') === -1 || control.value.indexOf('.') === -1 || control.value.length < 8){
+          resolve({'emailIsIncompleteAsync':true});
+        } else {
+          resolve(null);
+        }
+      },2500);
+    });
+    return promise;
+  }
+
+  resetForm():void {
+    this.assignmentForm.patchValue({
+      projectname: '',
+      email: '',
+      projectstatus: 'Stable'
+    });
+    //this.assignmentForm.reset();
+  }
 }
