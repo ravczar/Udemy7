@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormArray} from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -10,14 +10,23 @@ export class AppComponent implements OnInit {
   projectStatus: Array<string>;
   assignmentForm: FormGroup;
 
-  constructor(){
+  constructor(){}
+
+  ngOnInit(): void{
     this.projectStatus = new Array<string>(
       "Stable", "Critical", "Finished"
     );
+
+    this.assignmentForm = new FormGroup({
+      'projectname': new FormControl(null, Validators.required),
+      'email': new FormControl(null, Validators.required),
+      'projectstatus': new FormControl(null, Validators.required),
+    });
+
   }
 
-  ngOnInit(){
-    
+  onSubmitForm(){
+    console.log(this.assignmentForm);
   }
 
 }

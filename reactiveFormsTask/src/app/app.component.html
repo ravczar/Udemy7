@@ -8,12 +8,45 @@
   ** Also implement that validatoe as an async Validator (old one must be replaced - commented out)
   *** Upon submiting the form, simply print the value of the form to the console.
 -->
-<div class="container">
+<div class="container bg bg-warning">
   <div class="row">
     <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
-      <form>
-        <button class="btn btn-warning">Button</button>
-          <!-- My form here-->
+      <form class="bg bg-light" [formGroup]="assignmentForm" (ngSubmit)="onSubmitForm()">
+        <h3>Assignment 7: ReactiveForms</h3>
+
+        <div class="form-group">
+          <label for="projectname"> Project Name:</label>
+          <input 
+            type="text" 
+            id="projectname"
+            formControlName="projectname"
+            class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="mail">Email:</label>
+          <input 
+            type="text" 
+            id="email"
+            formControlName="email"
+            class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="projectstatus">Project Status:</label>
+          <select 
+            id="projectstatus"
+            formControlName="projectstatus" 
+            class="form-control">
+            <option 
+              *ngFor="let status of projectStatus; let i = index;" 
+              value="{{status}}">{{status}}</option>
+          </select>
+        </div>
+
+
+
+        <button class="btn btn-success" type="submit">Submit</button>
       </form>
     </div>
   </div>
